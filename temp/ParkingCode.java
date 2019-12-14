@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 @Autonomous(name = "ParkingAuto")
-public class ParkingCode extends LinearOpMode {
+public class BackupAuto extends LinearOpMode {
 
     public DcMotor frontLeft;
     public DcMotor frontRight;

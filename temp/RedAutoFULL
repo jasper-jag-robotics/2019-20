@@ -187,6 +187,10 @@ public class RedAutoFULL extends LinearOpMode {
         backLeft.setPower(1);
         backRight.setTargetPosition(ticks);
         backRight.setPower(1);
+        frontLeft.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
         
     }
 
@@ -199,6 +203,10 @@ public class RedAutoFULL extends LinearOpMode {
         backLeft.setPower(-1);
         backRight.setTargetPosition(ticks);
         backRight.setPower(-1);
+        frontLeft.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void moveLeft(int ticks){
@@ -210,6 +218,10 @@ public class RedAutoFULL extends LinearOpMode {
         backLeft.setPower(1);
         backRight.setTargetPosition(ticks);
         backRight.setPower(-1);
+        frontLeft.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void moveRight(int ticks){
@@ -221,6 +233,10 @@ public class RedAutoFULL extends LinearOpMode {
         backLeft.setPower(-1);
         backRight.setTargetPosition(ticks);
         backRight.setPower(1);
+        frontLeft.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void pivotLeft(int ticks){
@@ -232,6 +248,10 @@ public class RedAutoFULL extends LinearOpMode {
         backLeft.setPower(1);
         backRight.setTargetPosition(ticks);
         backRight.setPower(-1);
+        frontLeft.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void pivotRight(int ticks){
@@ -243,6 +263,10 @@ public class RedAutoFULL extends LinearOpMode {
         backLeft.setPower(-1);
         backRight.setTargetPosition(ticks);
         backRight.setPower(1);
+        frontLeft.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     //Mechanism Code

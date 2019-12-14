@@ -8,9 +8,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@Autonomous(name="BackupAuto")
+@Autonomous(name="BackupLeftAuto")
 //@Disabled
-public class BackupAuto extends LinearOpMode {
+public class BackupLeftAuto extends LinearOpMode {
 
     // declare motors
     public DcMotor frontLeft;
@@ -33,7 +33,7 @@ public class BackupAuto extends LinearOpMode {
         frontRight.setDirection(DcMotor.Direction.FORWARD);
         backRight.setDirection(DcMotor.Direction.REVERSE);
         frontLeft.setDirection(DcMotor.Direction.FORWARD);
-        backRight.setDirection(DcMotor.Direction.REVERSE);
+        backLeft.setDirection(DcMotor.Direction.REVERSE);
         
         telemetry.addData("Ready","Start it");
         telemetry.update();
@@ -42,7 +42,6 @@ public class BackupAuto extends LinearOpMode {
         timer.reset();
 
         while (opModeIsActive()){
-            
             // wait 25 seconds
             while (timer.seconds() < 28) {
                 telemetry.addLine("Waiting...");

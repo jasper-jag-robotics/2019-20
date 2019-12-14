@@ -1,0 +1,267 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+import java.util.List;
+@Autonomous(name = "RedAutoFULL")
+public class RedAutoFULL extends LinearOpMode {
+
+    public DcMotor frontLeft;
+    public DcMotor frontRight;
+    public DcMotor backLeft;
+    public DcMotor backRight;
+    public DcMotor armMotor;
+    public DcMotor autoArm;
+    public Servo servoGrip;
+
+    private VuforiaLocalizer vuforia;
+    private TFObjectDetector tfod;
+
+    private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
+    private static final String LABEL_FIRST_ELEMENT = "Stone";
+    private static final String LABEL_SECOND_ELEMENT = "Skystone";
+
+    private static final String VUFORIA_KEY = "AW43gwP/////AAAAmYhyz/zuEEVHnvzoxHlLyZItf4ilP0/dinBMnTUxXLYeVNLMHQmuS0m+8deBPobAQUB6JXl9rH3l3VC6eJQdYCL7ucXcYRzIaySgu5Edw18foo+xbQpFci4D7t/gEPkx5bkW8OsMCN8oaHnjJfDsm2yuE7YGWzmDs4NRIi929mQxrBk7BFxhDpDV97bGssofJZ16mCAaBgeIj+IUtW2RfZZ9QNOQRs0l0Nlf6vaFtI8/alOhJPjwpQc9ZXmyjF8Yc83mSOKLW8ei3UsYTzrAlZtYeHPiG4FHuGx6t/OCuN5z3V4sw06bvt7Hi9eYa2MivKl8GXlKppNt6kUPHRNFTVz11vboZTYAAAzafNiXyfNj";
+
+    int distanceForEachStone = 590;
+    int distanceCounter = 0;
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+
+        frontLeft = hardwareMap.get(DcMotor.class, "Front_Left");
+        frontRight = hardwareMap.get(DcMotor.class, "Front_Right");
+        backLeft = hardwareMap.get(DcMotor.class, "Back_Left");
+        backRight = hardwareMap.get(DcMotor.class, "Back_Right");
+        armMotor = hardwareMap.get(DcMotor.class, "Arm_Motor");
+        autoArm = hardwareMap.get(DcMotor.class, "Auto_Arm");
+        servoGrip = hardwareMap.get(Servo.class, "Servo_Grip");
+
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        backRight.setDirection(DcMotor.Direction.REVERSE);
+
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        initVuforia();
+
+        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+            initTfod();
+        } else {
+            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
+        }
+
+        if (tfod != null) {
+            tfod.activate();
+        }
+
+        telemetry.addData(">", "Press Play to start op mode");
+        telemetry.update();
+        waitForStart();
+
+        unGripClaw();
+
+        //Loading Zone
+        moveLeft(1666);
+        moveForward(1666);
+
+        for (int i = 0; i < 6; i++) {
+            if (tfod.equals(LABEL_FIRST_ELEMENT)) ;
+            if (i <= 5) {
+                distanceCounter++;
+                moveLeft(590);
+            } else if (i == 6) {
+                moveBack(1666);
+                moveRight(4500);
+                moveForward(1666);
+                moveRight(500);
+            }
+
+            if (tfod.equals(LABEL_SECOND_ELEMENT)) {
+                if (i <= 5) {
+                    armDown();
+                    gripClaw();
+                    armUp();
+                    moveBack(1666);
+                    moveRight(1166 + (distanceCounter * distanceForEachStone));
+                    moveForward(1666);
+                    moveRight(500);
+                    pivotRight(417);
+                    moveForward(500);
+                    unGripClaw();
+                    armDown();
+                    armUp();
+                    moveBack(500);
+                    pivotLeft(417);
+                    moveLeft(500);
+                    moveBack(1666);
+                    moveLeft(1666 + (distanceCounter * distanceForEachStone));
+                    moveForward(1666);
+
+                    moveLeft(distanceForEachStone);
+                } else if (i == 6) {
+                    moveBack(1666);
+                    moveLeft(4500);
+                    moveForward(1666);
+                    moveLeft(500);
+                }
+            }
+
+        }
+
+
+        if (opModeIsActive()) {
+            while (opModeIsActive()) {
+                if (tfod != null) {
+                    // getUpdatedRecognitions() will return null if no new information is available since
+                    // the last time that call was made.
+                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                    if (updatedRecognitions != null) {
+                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+
+                        // step through the list of recognitions and display boundary info.
+                        int i = 0;
+                        for (Recognition recognition : updatedRecognitions) {
+                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                    recognition.getLeft(), recognition.getTop());
+                            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                    recognition.getRight(), recognition.getBottom());
+                        }
+                        telemetry.update();
+                    }
+                }
+            }
+        }
+
+        if (tfod != null) {
+            tfod.shutdown();
+        }
+
+
+
+    }
+    private void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = "AW43gwP/////AAAAmYhyz/zuEEVHnvzoxHlLyZItf4ilP0/dinBMnTUxXLYeVNLMHQmuS0m+8deBPobAQUB6JXl9rH3l3VC6eJQdYCL7ucXcYRzIaySgu5Edw18foo+xbQpFci4D7t/gEPkx5bkW8OsMCN8oaHnjJfDsm2yuE7YGWzmDs4NRIi929mQxrBk7BFxhDpDV97bGssofJZ16mCAaBgeIj+IUtW2RfZZ9QNOQRs0l0Nlf6vaFtI8/alOhJPjwpQc9ZXmyjF8Yc83mSOKLW8ei3UsYTzrAlZtYeHPiG4FHuGx6t/OCuN5z3V4sw06bvt7Hi9eYa2MivKl8GXlKppNt6kUPHRNFTVz11vboZTYAAAzafNiXyfNj";
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+    }
+
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minimumConfidence = 0.8;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
+    }
+
+    //Movement Methods
+
+    public void moveForward(int ticks){
+        frontLeft.setTargetPosition(ticks);
+        frontLeft.setPower(1);
+        frontRight.setTargetPosition(ticks);
+        frontRight.setPower(1);
+        backLeft.setTargetPosition(ticks);
+        backLeft.setPower(1);
+        backRight.setTargetPosition(ticks);
+        backRight.setPower(1);
+        
+    }
+
+    public void moveBack(int ticks){
+        frontLeft.setTargetPosition(ticks);
+        frontLeft.setPower(-1);
+        frontRight.setTargetPosition(ticks);
+        frontRight.setPower(-1);
+        backLeft.setTargetPosition(ticks);
+        backLeft.setPower(-1);
+        backRight.setTargetPosition(ticks);
+        backRight.setPower(-1);
+    }
+
+    public void moveLeft(int ticks){
+        frontLeft.setTargetPosition(ticks);
+        frontLeft.setPower(-1);
+        frontRight.setTargetPosition(ticks);
+        frontRight.setPower(1);
+        backLeft.setTargetPosition(ticks);
+        backLeft.setPower(1);
+        backRight.setTargetPosition(ticks);
+        backRight.setPower(-1);
+    }
+
+    public void moveRight(int ticks){
+        frontLeft.setTargetPosition(ticks);
+        frontLeft.setPower(1);
+        frontRight.setTargetPosition(ticks);
+        frontRight.setPower(-1);
+        backLeft.setTargetPosition(ticks);
+        backLeft.setPower(-1);
+        backRight.setTargetPosition(ticks);
+        backRight.setPower(1);
+    }
+
+    public void pivotLeft(int ticks){
+        frontLeft.setTargetPosition(ticks);
+        frontLeft.setPower(1);
+        frontRight.setTargetPosition(ticks);
+        frontRight.setPower(-1);
+        backLeft.setTargetPosition(ticks);
+        backLeft.setPower(1);
+        backRight.setTargetPosition(ticks);
+        backRight.setPower(-1);
+    }
+
+    public void pivotRight(int ticks){
+        frontLeft.setTargetPosition(ticks);
+        frontLeft.setPower(-1);
+        frontRight.setTargetPosition(ticks);
+        frontRight.setPower(1);
+        backLeft.setTargetPosition(ticks);
+        backLeft.setPower(-1);
+        backRight.setTargetPosition(ticks);
+        backRight.setPower(1);
+    }
+
+    //Mechanism Code
+
+    public void unGripClaw(){
+        servoGrip.setPosition(1);
+    }
+
+    public void gripClaw(){
+        servoGrip.setPosition(0.5);
+    }
+
+    public void armDown() {
+        armMotor.setTargetPosition(5000);
+        armMotor.setPower(0.3);
+    }
+
+    public void armUp() {
+        armMotor.setTargetPosition(5000);
+        armMotor.setPower(-0.3);
+    }
+}
